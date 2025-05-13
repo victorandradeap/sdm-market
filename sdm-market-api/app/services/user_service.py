@@ -17,11 +17,17 @@ class UserService:
         existing_user = User.query.filter_by(email=data['email']).first()
         if existing_user:
             raise UserAlreadyExistsError(f"User with email {data['email']} already exists")
+
+        new_user = User(
+            name=data['name'],
+            email=data['email'],
+            phone=data['phone']
+        )
         
-        self.db.session.add(data)
+        self.db.session.add(new_user)
         try:
             self.db.session.commit()
-            return data
+            return new_user
         except Exception as e:
             self.db.session.rollback()
             raise e
