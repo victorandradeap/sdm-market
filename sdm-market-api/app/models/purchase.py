@@ -12,13 +12,11 @@ class Purchase(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    # Relacionamentos
     products = db.relationship('Product', 
                              secondary=purchase_product, 
                              back_populates='purchases',
                              lazy='joined')
                              
-    # Adiciona acesso direto aos dados da tabela de relacionamento
     purchase_products = db.relationship('PurchaseProduct', 
                                      back_populates='purchase',
                                      lazy='joined')

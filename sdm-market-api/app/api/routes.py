@@ -6,6 +6,8 @@ from app.schemas.purchase import purchase_schema, purchases_schema
 from app.services.user_service import UserAlreadyExistsError
 
 @bp.route('/users', methods=['POST'])
+
+# User routes
 def create_user():
     if not request.is_json:
         return jsonify({'error': 'Content-Type must be application/json'}), 400

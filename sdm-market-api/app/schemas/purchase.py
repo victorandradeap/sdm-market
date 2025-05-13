@@ -10,8 +10,6 @@ class PurchaseSchema(Schema):
     updated_at = fields.DateTime(dump_only=True)
     user = fields.Nested('UserSchema', exclude=('purchases',), dump_only=True)
     products = fields.List(fields.Nested(PurchaseProductSchema), required=True)
-    
-    # Adicionar os produtos com detalhes da compra (quantidade e preço unitário)
     purchase_products = fields.List(fields.Nested(PurchaseProductSchema), dump_only=True)
 
 purchase_schema = PurchaseSchema()

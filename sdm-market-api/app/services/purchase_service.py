@@ -13,7 +13,6 @@ class PurchaseService:
         self.product_service = product_service or ProductService(database)
 
     def get_all(self):
-        # Carrega as compras com os produtos e detalhes
         purchases = Purchase.query.options(
             db.joinedload(Purchase.purchase_products).joinedload(PurchaseProduct.product)
         ).all()
@@ -34,10 +33,8 @@ class PurchaseService:
         return purchases
     
     def create(self, data):
-        # Validar usuário
         user = self.user_service.get_user_by_id(data['user_id'])
         
-        # Validar produtos e calcular total
         if not data.get('products'):
             raise ValidationError('Products list is required')
             
@@ -58,7 +55,6 @@ class PurchaseService:
                 'unit_price': product.price
             })
         
-        # Criar a compra
         purchase = Purchase(
             user_id=user.id,
             total_amount=total_amount
@@ -67,15 +63,9 @@ class PurchaseService:
         self.db.session.add(purchase)
         
         try:
-            # Precisamos fazer commit primeiro para ter o ID da compra
             self.db.session.flush()
             
-            # Adicionar produtos à compra - usar apenas a inserção explícita na tabela de junção
             for item in products:
-                # NÃO fazer append diretamente, pois isso não inclui quantity e unit_price
-                # purchase.products.append(item['product']) 
-                
-                # Criar uma instância PurchaseProduct e adicioná-la ao banco de dados
                 purchase_product_item = PurchaseProduct(
                     purchase_id=purchase.id,
                     product_id=item['product'].id,

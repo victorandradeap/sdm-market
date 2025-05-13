@@ -12,7 +12,6 @@ class Product(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
-    # Relacionamento many-to-many com compras
     purchases = db.relationship('Purchase', 
                               secondary=purchase_product,
                               back_populates='products')

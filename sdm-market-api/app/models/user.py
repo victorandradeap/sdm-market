@@ -11,7 +11,6 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
-    # Relacionamento com compras
     purchases = db.relationship('Purchase', backref='user', lazy=True)
 
     def __repr__(self):

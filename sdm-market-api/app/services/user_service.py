@@ -6,7 +6,6 @@ from app.models.user import User
 from app.schemas.user import user_schema
 
 class UserAlreadyExistsError(Exception):
-    "Raised when attempting to create a user with an email that already exists in the database."
     pass
 
 class UserService:
