@@ -86,7 +86,6 @@ export default {
   methods: {
     loadProducts() {
       this.loading = true;
-      // Use the /api endpoint directly which is proxied by Nginx
       axios.get('/api/products')
         .then(response => {
           this.products = response.data;
@@ -99,7 +98,6 @@ export default {
     },
     saveProduct() {
       if (this.editingProduct) {
-        // Update existing product
         axios.put(`/api/products/${this.editingProduct.id}`, this.currentProduct)
           .then(() => {
             this.loadProducts();
@@ -109,7 +107,6 @@ export default {
             console.error('Error updating product:', error);
           });
       } else {
-        // Add new product
         axios.post('/api/products', this.currentProduct)
           .then(() => {
             this.loadProducts();

@@ -137,16 +137,13 @@ export default {
       this.loading = true;
       axios.get('/api/purchases')
         .then(response => {
-          // Process purchase data to ensure it has all required fields
           this.purchases = response.data.map(purchase => {
-            // Use purchase_products if available, or process products if not
             if (purchase.purchase_products && purchase.purchase_products.length > 0) {
               purchase.products = purchase.purchase_products.map(pp => {
                 return {
                   product_id: pp.product_id,
                   quantity: pp.quantity,
                   unit_price: pp.unit_price,
-                  // Add product name if available
                   product_name: pp.product ? pp.product.name : null
                 };
               });
@@ -194,26 +191,22 @@ export default {
       }
     },
     savePurchase() {
-      // Validate form
       if (!this.purchase.user_id || !this.purchase.products.some(p => p.product_id && p.quantity > 0)) {
         alert('Please fill in all fields.');
         return;
       }
-      
-      // Filter valid products and add unit price
+  
       const products = this.purchase.products
         .filter(p => p.product_id && p.quantity > 0)
         .map(p => {
-          // Find the selected product to get its price
           const product = this.products.find(prod => prod.id === p.product_id);
           return {
             product_id: p.product_id,
             quantity: p.quantity,
-            unit_price: product ? product.price : 0 // Add unit_price from the product data
+            unit_price: product ? product.price : 0
           };
         });
-      
-      // Create purchase object
+
       const purchaseData = {
         user_id: this.purchase.user_id,
         products: products
@@ -253,16 +246,14 @@ export default {
       return user ? user.name : `Customer #${userId}`;
     },
     getProductName(productId) {
-      if (!productId) return 'Unknown Product';
-      // Check if the product name is already in the purchase data
+      if (!productId) return 'Unknown Product';    
       for (const purchase of this.purchases) {
         for (const product of purchase.products) {
           if (product.product_id === productId && product.product_name) {
             return product.product_name;
           }
         }
-      }
-      // Fallback to products list
+      }    
       const product = this.products.find(p => p.id === productId);
       return product ? product.name : `Product #${productId}`;
     },
@@ -279,8 +270,7 @@ export default {
       } catch (e) {
         return 'Invalid Date';
       }
-    },
-    // Helper method to update unit_price when a product is selected
+    },  
     updateProductPrice(index) {
       const selectedProductId = this.purchase.products[index].product_id;
       if (selectedProductId) {
@@ -293,8 +283,7 @@ export default {
       }
     }
   },
-  watch: {
-    // Watch for changes to product selections and update prices
+  watch: {  
     'purchase.products': {
       handler(products) {
         products.forEach((product, index) => {

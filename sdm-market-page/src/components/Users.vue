@@ -154,8 +154,7 @@ export default {
         });
     },
     saveUser() {
-      if (this.editingUser) {
-        // Update existing customer
+      if (this.editingUser) {  
         axios.put(`/api/users/${this.editingUser.id}`, this.currentUser)
           .then(() => {
             this.loadUsers();
@@ -164,8 +163,7 @@ export default {
           .catch(error => {
             console.error('Error updating customer:', error);
           });
-      } else {
-        // Add new customer
+      } else {  
         axios.post('/api/users', this.currentUser)
           .then(() => {
             this.loadUsers();
@@ -207,17 +205,14 @@ export default {
       this.showUserPurchases = true;
       
       axios.get(`/api/users/${userId}/purchases`)
-        .then(response => {
-          // Process purchase data to ensure it has all required fields
-          this.userPurchases = response.data.map(purchase => {
-            // Use purchase_products if available, or process products if not
+        .then(response => {    
+          this.userPurchases = response.data.map(purchase => {      
             if (purchase.purchase_products && purchase.purchase_products.length > 0) {
               purchase.products = purchase.purchase_products.map(pp => {
                 return {
                   product_id: pp.product_id,
                   quantity: pp.quantity,
-                  unit_price: pp.unit_price,
-                  // Add product name if available
+                  unit_price: pp.unit_price,            
                   product_name: pp.product ? pp.product.name : null
                 };
               });
