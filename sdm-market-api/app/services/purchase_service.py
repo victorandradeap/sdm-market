@@ -1,7 +1,7 @@
 from app.extensions import db
 from app.models.purchase import Purchase
 from app.models.product import Product
-from app.models.purchase_product import purchase_product
+from app.models.purchase_product import purchase_product, PurchaseProduct
 from app.services.user_service import UserService
 from app.services.product_service import ProductService
 from app.api.errors import NotFoundError, ValidationError
@@ -13,16 +13,25 @@ class PurchaseService:
         self.product_service = product_service or ProductService(database)
 
     def get_all(self):
-        return Purchase.query.all()
+        # Carrega as compras com os produtos e detalhes
+        purchases = Purchase.query.options(
+            db.joinedload(Purchase.purchase_products).joinedload(PurchaseProduct.product)
+        ).all()
+        return purchases
     
     def get_by_id(self, purchase_id):
-        purchase = Purchase.query.get(purchase_id)
+        purchase = Purchase.query.options(
+            db.joinedload(Purchase.purchase_products).joinedload(PurchaseProduct.product)
+        ).get(purchase_id)
         if not purchase:
             raise NotFoundError('Purchase not found')
         return purchase
     
     def get_user_purchases(self, user_id):
-        return Purchase.query.filter_by(user_id=user_id).all()
+        purchases = Purchase.query.options(
+            db.joinedload(Purchase.purchase_products).joinedload(PurchaseProduct.product)
+        ).filter_by(user_id=user_id).all()
+        return purchases
     
     def create(self, data):
         # Validar usuário
@@ -66,15 +75,14 @@ class PurchaseService:
                 # NÃO fazer append diretamente, pois isso não inclui quantity e unit_price
                 # purchase.products.append(item['product']) 
                 
-                # Inserir dados na tabela de junção com todos os campos necessários
-                self.db.session.execute(
-                    purchase_product.insert().values(
-                        purchase_id=purchase.id,
-                        product_id=item['product'].id,
-                        quantity=item['quantity'],
-                        unit_price=item['unit_price']
-                    )
+                # Criar uma instância PurchaseProduct e adicioná-la ao banco de dados
+                purchase_product_item = PurchaseProduct(
+                    purchase_id=purchase.id,
+                    product_id=item['product'].id,
+                    quantity=item['quantity'],
+                    unit_price=item['unit_price']
                 )
+                self.db.session.add(purchase_product_item)
             
             self.db.session.commit()
             return purchase

@@ -17,6 +17,11 @@ class Purchase(db.Model):
                              secondary=purchase_product, 
                              back_populates='purchases',
                              lazy='joined')
+                             
+    # Adiciona acesso direto aos dados da tabela de relacionamento
+    purchase_products = db.relationship('PurchaseProduct', 
+                                     back_populates='purchase',
+                                     lazy='joined')
 
     def __repr__(self):
         return f'<Purchase {self.id} by User {self.user_id}>'

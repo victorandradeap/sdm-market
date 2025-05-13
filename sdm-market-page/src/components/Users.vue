@@ -210,8 +210,18 @@ export default {
         .then(response => {
           // Process purchase data to ensure it has all required fields
           this.userPurchases = response.data.map(purchase => {
-            // Make sure products have unit_price (use price as fallback)
-            if (purchase.products) {
+            // Use purchase_products if available, or process products if not
+            if (purchase.purchase_products && purchase.purchase_products.length > 0) {
+              purchase.products = purchase.purchase_products.map(pp => {
+                return {
+                  product_id: pp.product_id,
+                  quantity: pp.quantity,
+                  unit_price: pp.unit_price,
+                  // Add product name if available
+                  product_name: pp.product ? pp.product.name : null
+                };
+              });
+            } else if (purchase.products) {
               purchase.products = purchase.products.map(product => {
                 return {
                   ...product,
