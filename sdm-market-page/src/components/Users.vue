@@ -143,7 +143,7 @@ export default {
   methods: {
     loadUsers() {
       this.loading = true;
-      axios.get(`${process.env.SDM_MARKET_API_URL || 'http://localhost:5000'}/api/users`)
+      axios.get('/api/users')
         .then(response => {
           this.users = response.data;
           this.loading = false;
@@ -156,7 +156,7 @@ export default {
     saveUser() {
       if (this.editingUser) {
         // Update existing customer
-        axios.put(`${process.env.SDM_MARKET_API_URL || 'http://localhost:5000'}/api/users/${this.editingUser.id}`, this.currentUser)
+        axios.put(`/api/users/${this.editingUser.id}`, this.currentUser)
           .then(() => {
             this.loadUsers();
             this.resetForm();
@@ -166,7 +166,7 @@ export default {
           });
       } else {
         // Add new customer
-        axios.post(`${process.env.SDM_MARKET_API_URL || 'http://localhost:5000'}/api/users`, this.currentUser)
+        axios.post('/api/users', this.currentUser)
           .then(() => {
             this.loadUsers();
             this.resetForm();
@@ -193,7 +193,7 @@ export default {
     },
     deleteUser(id) {
       if (confirm('Are you sure you want to delete this customer?')) {
-        axios.delete(`${process.env.SDM_MARKET_API_URL || 'http://localhost:5000'}/api/users/${id}`)
+        axios.delete(`/api/users/${id}`)
           .then(() => {
             this.loadUsers();
           })
@@ -206,7 +206,7 @@ export default {
       this.loadingPurchases = true;
       this.showUserPurchases = true;
       
-      axios.get(`${process.env.SDM_MARKET_API_URL || 'http://localhost:5000'}/api/users/${userId}/purchases`)
+      axios.get(`/api/users/${userId}/purchases`)
         .then(response => {
           this.userPurchases = response.data;
           this.loadingPurchases = false;

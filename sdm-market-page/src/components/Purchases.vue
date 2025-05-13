@@ -129,7 +129,7 @@ export default {
   methods: {
     loadPurchases() {
       this.loading = true;
-      axios.get(`${process.env.SDM_MARKET_API_URL || 'http://localhost:5000'}/api/purchases`)
+      axios.get('/api/purchases')
         .then(response => {
           this.purchases = response.data;
           this.loading = false;
@@ -140,7 +140,7 @@ export default {
         });
     },
     loadUsers() {
-      axios.get(`${process.env.SDM_MARKET_API_URL || 'http://localhost:5000'}/api/users`)
+      axios.get('/api/users')
         .then(response => {
           this.users = response.data;
         })
@@ -149,7 +149,7 @@ export default {
         });
     },
     loadProducts() {
-      axios.get(`${process.env.SDM_MARKET_API_URL || 'http://localhost:5000'}/api/products`)
+      axios.get('/api/products')
         .then(response => {
           this.products = response.data;
         })
@@ -181,7 +181,7 @@ export default {
         products: products
       };
       
-      axios.post(`${process.env.SDM_MARKET_API_URL || 'http://localhost:5000'}/api/purchases`, purchaseData)
+      axios.post('/api/purchases', purchaseData)
         .then(() => {
           this.resetForm();
           this.loadPurchases();
@@ -200,7 +200,7 @@ export default {
     },
     deletePurchase(id) {
       if (confirm('Are you sure you want to delete this purchase?')) {
-        axios.delete(`${process.env.SDM_MARKET_API_URL || 'http://localhost:5000'}/api/purchases/${id}`)
+        axios.delete(`/api/purchases/${id}`)
           .then(() => {
             this.loadPurchases();
           })

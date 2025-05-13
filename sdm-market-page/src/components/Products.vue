@@ -86,7 +86,8 @@ export default {
   methods: {
     loadProducts() {
       this.loading = true;
-      axios.get(`${process.env.SDM_MARKET_API_URL || 'http://localhost:5000'}/api/products`)
+      // Use the /api endpoint directly which is proxied by Nginx
+      axios.get('/api/products')
         .then(response => {
           this.products = response.data;
           this.loading = false;
@@ -99,7 +100,7 @@ export default {
     saveProduct() {
       if (this.editingProduct) {
         // Update existing product
-        axios.put(`${process.env.SDM_MARKET_API_URL || 'http://localhost:5000'}/api/products/${this.editingProduct.id}`, this.currentProduct)
+        axios.put(`/api/products/${this.editingProduct.id}`, this.currentProduct)
           .then(() => {
             this.loadProducts();
             this.resetForm();
@@ -109,7 +110,7 @@ export default {
           });
       } else {
         // Add new product
-        axios.post(`${process.env.SDM_MARKET_API_URL || 'http://localhost:5000'}/api/products`, this.currentProduct)
+        axios.post('/api/products', this.currentProduct)
           .then(() => {
             this.loadProducts();
             this.resetForm();
@@ -136,7 +137,7 @@ export default {
     },
     deleteProduct(id) {
       if (confirm('Are you sure you want to delete this product?')) {
-        axios.delete(`${process.env.SDM_MARKET_API_URL || 'http://localhost:5000'}/api/products/${id}`)
+        axios.delete(`/api/products/${id}`)
           .then(() => {
             this.loadProducts();
           })
