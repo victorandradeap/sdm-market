@@ -76,7 +76,7 @@
             <div v-else>
               <div v-for="purchase in userPurchases" :key="purchase.id" class="card mb-3">
                 <div class="card-header">
-                  Purchase #{{ purchase.id }} - {{ new Date(purchase.date).toLocaleDateString() }}
+                  Purchase #{{ purchase.id }} - {{ formatDate(purchase.purchase_date) }}
                 </div>
                 <div class="card-body">
                   <table class="table table-sm">
@@ -92,14 +92,14 @@
                       <tr v-for="item in purchase.products" :key="item.product_id">
                         <td>{{ item.product_name || 'Product #' + item.product_id }}</td>
                         <td>{{ item.quantity }}</td>
-                        <td>{{ formatCurrency(item.price) }}</td>
-                        <td>{{ formatCurrency(item.price * item.quantity) }}</td>
+                        <td>{{ formatCurrency(item.unit_price || item.price || 0) }}</td>
+                        <td>{{ formatCurrency((item.unit_price || item.price || 0) * item.quantity) }}</td>
                       </tr>
                     </tbody>
                     <tfoot>
                       <tr>
                         <th colspan="3" class="text-end">Total:</th>
-                        <th>{{ formatCurrency(purchase.total) }}</th>
+                        <th>{{ formatCurrency(purchase.total_amount) }}</th>
                       </tr>
                     </tfoot>
                   </table>
@@ -208,7 +208,19 @@ export default {
       
       axios.get(`/api/users/${userId}/purchases`)
         .then(response => {
-          this.userPurchases = response.data;
+          // Process purchase data to ensure it has all required fields
+          this.userPurchases = response.data.map(purchase => {
+            // Make sure products have unit_price (use price as fallback)
+            if (purchase.products) {
+              purchase.products = purchase.products.map(product => {
+                return {
+                  ...product,
+                  unit_price: product.unit_price || product.price || 0
+                };
+              });
+            }
+            return purchase;
+          });
           this.loadingPurchases = false;
         })
         .catch(error => {
@@ -221,6 +233,14 @@ export default {
         style: 'currency',
         currency: 'BRL'
       }).format(value);
+    },
+    formatDate(dateString) {
+      if (!dateString) return 'No date';
+      try {
+        return new Date(dateString).toLocaleDateString();
+      } catch (e) {
+        return 'Invalid Date';
+      }
     }
   }
 }

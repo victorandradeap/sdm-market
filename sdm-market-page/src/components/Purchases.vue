@@ -72,7 +72,7 @@
           <div v-for="purchase in purchases" :key="purchase.id" class="card mb-3">
             <div class="card-header d-flex justify-content-between align-items-center">
               <div>
-                Purchase #{{ purchase.id }} - {{ new Date(purchase.date).toLocaleDateString() }} - 
+                Purchase #{{ purchase.id }} - {{ formatDate(purchase.purchase_date) }} - 
                 Customer: {{ getUserName(purchase.user_id) }}
               </div>
               <button class="btn btn-sm btn-danger" @click="deletePurchase(purchase.id)">Delete</button>
@@ -91,14 +91,14 @@
                   <tr v-for="item in purchase.products" :key="item.product_id">
                     <td>{{ getProductName(item.product_id) }}</td>
                     <td>{{ item.quantity }}</td>
-                    <td>{{ formatCurrency(item.price) }}</td>
-                    <td>{{ formatCurrency(item.price * item.quantity) }}</td>
+                    <td>{{ formatCurrency(item.unit_price || 0) }}</td>
+                    <td>{{ formatCurrency((item.unit_price || 0) * item.quantity) }}</td>
                   </tr>
                 </tbody>
                 <tfoot>
                   <tr>
                     <th colspan="3" class="text-end">Total:</th>
-                    <th>{{ formatCurrency(purchase.total) }}</th>
+                    <th>{{ formatCurrency(purchase.total_amount) }}</th>
                   </tr>
                 </tfoot>
               </table>
@@ -137,7 +137,19 @@ export default {
       this.loading = true;
       axios.get('/api/purchases')
         .then(response => {
-          this.purchases = response.data;
+          // Process purchase data to ensure it has all required fields
+          this.purchases = response.data.map(purchase => {
+            // Make sure products have unit_price (use price as fallback)
+            if (purchase.products) {
+              purchase.products = purchase.products.map(product => {
+                return {
+                  ...product,
+                  unit_price: product.unit_price || product.price || 0
+                };
+              });
+            }
+            return purchase;
+          });
           this.loading = false;
         })
         .catch(error => {
@@ -226,18 +238,28 @@ export default {
       }
     },
     getUserName(userId) {
+      if (!userId) return 'Unknown Customer';
       const user = this.users.find(u => u.id === userId);
-      return user ? user.name : `Cliente #${userId}`;
+      return user ? user.name : `Customer #${userId}`;
     },
     getProductName(productId) {
+      if (!productId) return 'Unknown Product';
       const product = this.products.find(p => p.id === productId);
-      return product ? product.name : `Produto #${productId}`;
+      return product ? product.name : `Product #${productId}`;
     },
     formatCurrency(value) {
       return new Intl.NumberFormat('pt-BR', {
         style: 'currency',
         currency: 'BRL'
       }).format(value);
+    },
+    formatDate(dateString) {
+      if (!dateString) return 'No date';
+      try {
+        return new Date(dateString).toLocaleDateString();
+      } catch (e) {
+        return 'Invalid Date';
+      }
     },
     // Helper method to update unit_price when a product is selected
     updateProductPrice(index) {
