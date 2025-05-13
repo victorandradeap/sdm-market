@@ -61,10 +61,12 @@ class PurchaseService:
             # Precisamos fazer commit primeiro para ter o ID da compra
             self.db.session.flush()
             
-            # Adicionar produtos à compra
+            # Adicionar produtos à compra - usar apenas a inserção explícita na tabela de junção
             for item in products:
-                purchase.products.append(item['product'])
-                # Inserir dados na tabela de junção
+                # NÃO fazer append diretamente, pois isso não inclui quantity e unit_price
+                # purchase.products.append(item['product']) 
+                
+                # Inserir dados na tabela de junção com todos os campos necessários
                 self.db.session.execute(
                     purchase_product.insert().values(
                         purchase_id=purchase.id,
