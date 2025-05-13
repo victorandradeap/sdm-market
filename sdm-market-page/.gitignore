@@ -1,0 +1,62 @@
+# Vue.js .gitignore
+
+# Dependencies
+/node_modules
+/package-lock.json
+/yarn.lock
+/pnpm-lock.yaml
+
+# Build output
+/dist
+/dist-ssr
+*.local
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+.env.development
+.env.test
+.env.production
+
+# Testing
+/coverage
+/cypress/videos/
+/cypress/screenshots/
+
+# Vue related files
+.history/
+.cache/
+.temp/
+
+# Optional: Storybook build outputs
+/storybook-static
+
+# Optional: Browser profiles for e2e testing
+/selenium-debug.log
+/chromedriver.log
+/geckodriver.log
+/browserstack.err
+
+# Optional: TypeScript cache and generated files
+*.tsbuildinfo
+.eslintcache
