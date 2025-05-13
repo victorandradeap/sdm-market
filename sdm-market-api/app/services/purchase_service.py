@@ -86,7 +86,16 @@ class PurchaseService:
             if not purchase:
                 raise NotFoundError(f'Purchase with ID {purchase_id} not found')
             
+            # First, delete all related purchase_product entries manually
+            if purchase.purchase_products:
+                for pp in purchase.purchase_products:
+                    self.db.session.delete(pp)
+                # Flush to ensure the relationships are properly removed
+                self.db.session.flush()
+            
+            # Then delete the purchase itself
             self.db.session.delete(purchase)
+            
             try:
                 self.db.session.commit()
             except Exception as e:

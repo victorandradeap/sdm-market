@@ -10,7 +10,7 @@ services:
     ports:
       - "8080:80"
     environment:
-      - SDM_MARKET_API_URL=http://localhost:5000 # Changed to use the host's port mapping
+      - SDM_MARKET_API_URL=http://api:5000
     depends_on:
       - api
     networks:

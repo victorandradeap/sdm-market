@@ -231,12 +231,33 @@ export default {
     },
     deletePurchase(id) {
       if (confirm('Are you sure you want to delete this purchase?')) {
+        // Show deleting indicator
+        const button = event.target;
+        const originalText = button.textContent;
+        button.disabled = true;
+        button.textContent = 'Deleting...';
+        
         axios.delete(`/api/purchases/${id}`)
           .then(() => {
             this.loadPurchases();
+            alert('Purchase deleted successfully');
           })
           .catch(error => {
             console.error('Error deleting purchase:', error);
+            let errorMessage = 'Failed to delete purchase. ';
+            if (error.response) {
+              errorMessage += error.response.data.error || `Status: ${error.response.status}`;
+            } else if (error.request) {
+              errorMessage += 'No response received from server. Check your network connection.';
+            } else {
+              errorMessage += error.message;
+            }
+            alert(errorMessage);
+          })
+          .finally(() => {
+            // Restore button state
+            button.disabled = false;
+            button.textContent = originalText;
           });
       }
     },
