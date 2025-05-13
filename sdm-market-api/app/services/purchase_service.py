@@ -81,10 +81,18 @@ class PurchaseService:
             raise e
     
     def delete(self, purchase_id):
-        purchase = self.get_by_id(purchase_id)
-        self.db.session.delete(purchase)
         try:
-            self.db.session.commit()
-        except Exception as e:
-            self.db.session.rollback()
+            purchase = self.get_by_id(purchase_id)
+            if not purchase:
+                raise NotFoundError(f'Purchase with ID {purchase_id} not found')
+            
+            self.db.session.delete(purchase)
+            try:
+                self.db.session.commit()
+            except Exception as e:
+                self.db.session.rollback()
+                raise Exception(f'Error deleting purchase: {str(e)}')
+        except NotFoundError as e:
             raise e
+        except Exception as e:
+            raise Exception(f'Error processing delete request: {str(e)}')

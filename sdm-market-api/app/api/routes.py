@@ -4,10 +4,10 @@ from app.schemas.user import user_schema, users_schema
 from app.schemas.product import product_schema, products_schema
 from app.schemas.purchase import purchase_schema, purchases_schema
 from app.services.user_service import UserAlreadyExistsError
-
-@bp.route('/users', methods=['POST'])
+from app.api.errors import NotFoundError
 
 # User routes
+@bp.route('/users', methods=['POST'])
 def create_user():
     if not request.is_json:
         return jsonify({'error': 'Content-Type must be application/json'}), 400
@@ -159,5 +159,7 @@ def delete_purchase(id):
     try:
         current_app.purchase_service.delete(id)
         return '', 204
-    except Exception as e:
+    except NotFoundError as e:
         return jsonify({'error': str(e)}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
