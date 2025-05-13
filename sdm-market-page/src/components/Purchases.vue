@@ -22,7 +22,7 @@
             <div v-for="(item, index) in purchase.products" :key="index" class="card mb-3">
               <div class="card-body">
                 <div class="row">
-                  <div class="col-md-6">
+                  <div class="col-md-5">
                     <div class="form-group">
                       <label :for="'product' + index">Product</label>
                       <select class="form-control" :id="'product' + index" v-model="item.product_id" required>
@@ -33,10 +33,16 @@
                       </select>
                     </div>
                   </div>
-                  <div class="col-md-4">
+                  <div class="col-md-3">
                     <div class="form-group">
                       <label :for="'quantity' + index">Quantity</label>
                       <input type="number" class="form-control" :id="'quantity' + index" v-model="item.quantity" min="1" required>
+                    </div>
+                  </div>
+                  <div class="col-md-2">
+                    <div class="form-group">
+                      <label>Unit Price</label>
+                      <p class="form-control-static">{{ formatCurrency(item.unit_price) }}</p>
                     </div>
                   </div>
                   <div class="col-md-2">
@@ -116,7 +122,7 @@ export default {
       products: [],
       purchase: {
         user_id: '',
-        products: [{ product_id: '', quantity: 1 }]
+        products: [{ product_id: '', quantity: 1, unit_price: 0 }]
       },
       loading: false
     }
@@ -158,7 +164,7 @@ export default {
         });
     },
     addProduct() {
-      this.purchase.products.push({ product_id: '', quantity: 1 });
+      this.purchase.products.push({ product_id: '', quantity: 1, unit_price: 0 });
     },
     removeProduct(index) {
       if (this.purchase.products.length > 1) {
@@ -172,8 +178,18 @@ export default {
         return;
       }
       
-      // Filter valid products
-      const products = this.purchase.products.filter(p => p.product_id && p.quantity > 0);
+      // Filter valid products and add unit price
+      const products = this.purchase.products
+        .filter(p => p.product_id && p.quantity > 0)
+        .map(p => {
+          // Find the selected product to get its price
+          const product = this.products.find(prod => prod.id === p.product_id);
+          return {
+            product_id: p.product_id,
+            quantity: p.quantity,
+            unit_price: product ? product.price : 0 // Add unit_price from the product data
+          };
+        });
       
       // Create purchase object
       const purchaseData = {
@@ -195,7 +211,7 @@ export default {
     resetForm() {
       this.purchase = {
         user_id: '',
-        products: [{ product_id: '', quantity: 1 }]
+        products: [{ product_id: '', quantity: 1, unit_price: 0 }]
       };
     },
     deletePurchase(id) {
@@ -222,6 +238,31 @@ export default {
         style: 'currency',
         currency: 'BRL'
       }).format(value);
+    },
+    // Helper method to update unit_price when a product is selected
+    updateProductPrice(index) {
+      const selectedProductId = this.purchase.products[index].product_id;
+      if (selectedProductId) {
+        const product = this.products.find(p => p.id === selectedProductId);
+        if (product) {
+          this.purchase.products[index].unit_price = product.price;
+        }
+      } else {
+        this.purchase.products[index].unit_price = 0;
+      }
+    }
+  },
+  watch: {
+    // Watch for changes to product selections and update prices
+    'purchase.products': {
+      handler(products) {
+        products.forEach((product, index) => {
+          if (product.product_id) {
+            this.updateProductPrice(index);
+          }
+        });
+      },
+      deep: true
     }
   }
 }
