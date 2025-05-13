@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+  # Frontend service
+  frontend:
+    container_name: sdm-market-page
+    build:
+      context: ./sdm-market-page
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    environment:
+      - SDM_MARKET_API_URL=http://localhost:5000 # Changed to use the host's port mapping
+    depends_on:
+      - api
+    networks:
+      - sdm-network
+
+  # Backend API service
+  api:
+    container_name: sdm-market-api
+    build:
+      context: ./sdm-market-api
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_ENV=production
+      - DATABASE_URL=sqlite:///sdm_db.sqlite
+    volumes:
+      - api-data:/app/instance
+    networks:
+      - sdm-network
+
+# Persistent volumes
+volumes:
+  api-data:
+    driver: local
+
+# Custom network for services
+networks:
+  sdm-network:
+    driver: bridge
