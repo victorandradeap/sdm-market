@@ -1,41 +1,39 @@
-# SDM Market System
+# Sistema SDM Market
 
-This project contains a sales management system composed of a Vue.js frontend and a Flask API backend.
+Este projeto contém um sistema de gerenciamento de vendas composto por um frontend em Vue.js e um backend em Flask API.
 
-## Running with Docker Compose
+## Executando com Docker Compose
 
-The easiest way to run the application is using Docker Compose, which will start both the frontend and backend services.
+A maneira mais fácil de executar a aplicação é usando Docker Compose, que iniciará tanto os serviços de frontend quanto de backend.
 
-### Prerequisites
+### Pré-requisitos
 
-- Docker and Docker Compose installed on your machine
+- Docker e Docker Compose instalados na sua máquina
 
-### Steps to run
+### Passos para executar
 
-1. Clone this repository
+1. Clone este repositório
    ```bash
-   git clone <repository-url>
+   git clone <url-do-repositório>
    cd sdm-market
    ```
 
-2. Start the application using Docker Compose
+2. Inicie a aplicação usando Docker Compose
    ```bash
    docker-compose up -d
    ```
 
-3. Access the application
+3. Acesse a aplicação
    - Frontend: http://localhost:8080
    - API: http://localhost:5000
 
-### Services
+### Serviços
 
 - **Frontend (sdm-market-page)**
-  - Vue.js application running on port 8080
-  - Container name: `sdm-market-page`
+  - Aplicação Vue.js rodando na porta 8080
+  - Nome do container: `sdm-market-page`
 
 - **Backend API (sdm-market-api)**
-  - Flask API running on port 5000
-  - Container name: `sdm-market-api`
-  - SQLite database stored in a persistent volume
-
-## Development
+  - API Flask rodando na porta 5000
+  - Nome do container: `sdm-market-api`
+  - Banco de dados SQLite armazenado em um volume persistente
