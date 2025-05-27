@@ -1,5 +1,6 @@
 # SDM Market System
 
+
 This project contains a sales management system developed for the Distributed Systems course, featuring a Vue.js frontend and a Flask API backend.
 
 ## Overview
