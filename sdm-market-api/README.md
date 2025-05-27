@@ -1,85 +1,95 @@
-# Sistema de Gerenciamento de Vendas
+# Sales Management System API
 
-Este é um sistema simples de gerenciamento de vendas desenvolvido com Flask e SQLite, que permite o controle de clientes, produtos e compras.
+This is a backend service for the SDM Market distributed system, developed with Flask and SQLite for the Distributed Systems course. The API provides endpoints for managing customers, products, and purchases in a microservices architecture.
 
-## Estrutura do Projeto
+## Distributed Systems Architecture
+
+This API component serves as the backend microservice in the SDM Market distributed system. It demonstrates several key distributed systems concepts:
+
+1. **REST API**: Provides stateless communication through HTTP endpoints
+2. **Data Persistence**: Manages consistent data storage for the entire system
+3. **Service Independence**: Operates as a standalone service with clear boundaries
+4. **API Contract**: Defines a stable interface for frontend communication
+5. **Stateless Processing**: Each request contains all necessary information
+
+## Project Structure
 
 ```
 app/
-├── api/            # Endpoints da API REST
-├── models/         # Modelos do banco de dados
-├── schemas/        # Schemas para serialização
-└── services/       # Lógica de negócio
+├── api/            # REST API endpoints
+├── models/         # Database models
+├── schemas/        # Serialization schemas
+└── services/       # Business logic
 ```
 
 ## API Endpoints
 
-### Clientes (Users)
+### Users
 
 - **POST /api/users**
-  - Criar um novo cliente
+  - Create a new customer
   ```json
   {
-    "name": "João Silva",
-    "email": "joao@exemplo.com",
+    "name": "John Smith",
+    "email": "john@example.com",
     "phone": "11999999999"
   }
   ```
 
 - **GET /api/users**
-  - Listar todos os clientes
+  - List all customers
 
 - **GET /api/users/{id}**
-  - Obter um cliente específico
+  - Get a specific customer
 
 - **PUT /api/users/{id}**
-  - Atualizar um cliente
+  - Update a customer
   ```json
   {
-    "name": "João Silva Atualizado",
-    "email": "joao.novo@exemplo.com",
+    "name": "John Smith Updated",
+    "email": "john.new@example.com",
     "phone": "11999999999"
   }
   ```
 
 - **DELETE /api/users/{id}**
-  - Remover um cliente
+  - Remove a customer
 
-### Produtos (Products)
+### Products
 
 - **POST /api/products**
-  - Criar um novo produto
+  - Create a new product
   ```json
   {
-    "name": "Produto Exemplo",
-    "description": "Descrição do produto",
+    "name": "Example Product",
+    "description": "Product description",
     "price": 99.99
   }
   ```
 
 - **GET /api/products**
-  - Listar todos os produtos
+  - List all products
 
 - **GET /api/products/{id}**
-  - Obter um produto específico
+  - Get a specific product
 
 - **PUT /api/products/{id}**
-  - Atualizar um produto
+  - Update a product
   ```json
   {
-    "name": "Produto Atualizado",
-    "description": "Nova descrição",
+    "name": "Updated Product",
+    "description": "New description",
     "price": 149.99
   }
   ```
 
 - **DELETE /api/products/{id}**
-  - Remover um produto
+  - Remove a product
 
-### Compras (Purchases)
+### Purchases
 
 - **POST /api/purchases**
-  - Criar uma nova compra
+  - Create a new purchase
   ```json
   {
     "user_id": 1,
@@ -97,53 +107,80 @@ app/
   ```
 
 - **GET /api/purchases**
-  - Listar todas as compras
+  - List all purchases
 
 - **GET /api/purchases/{id}**
-  - Obter uma compra específica
+  - Get a specific purchase
 
 - **GET /api/users/{user_id}/purchases**
-  - Listar compras de um cliente específico
+  - List purchases for a specific customer
 
 - **DELETE /api/purchases/{id}**
-  - Remover uma compra
+  - Remove a purchase
 
-## Regras de Negócio
+## Business Rules
 
-1. **Usuários**
-   - Nome, email e telefone são obrigatórios
-   - Email deve ser único no sistema
+1. **Users**
+   - Name, email, and phone are required
+   - Email must be unique in the system
 
-2. **Produtos**
-   - Nome e preço são obrigatórios
-   - Preço deve ser maior que zero
+2. **Products**
+   - Name and price are required
+   - Price must be greater than zero
 
-3. **Compras**
-   - Uma compra deve estar associada a um usuário existente
-   - Uma compra deve ter pelo menos um produto
-   - A quantidade de cada produto deve ser maior que zero
-   - O preço unitário é registrado no momento da compra
-   - O valor total é calculado automaticamente
+3. **Purchases**
+   - A purchase must be associated with an existing user
+   - A purchase must have at least one product
+   - The quantity of each product must be greater than zero
+   - The unit price is recorded at the time of purchase
+   - The total value is calculated automatically
 
-## Como Executar
+## Distributed Systems Considerations
 
-1. Clone o repositório
-2. Instale as dependências:
+### 1. Data Consistency
+The API ensures data consistency by implementing transaction management for operations that affect multiple entities (e.g., creating a purchase that affects product inventory).
+
+### 2. API Versioning
+The API structure supports versioning to allow for future changes while maintaining backward compatibility.
+
+### 3. Error Handling
+Standardized error responses are implemented to provide clear feedback to distributed clients:
+- 400: Bad Request - Invalid input data
+- 404: Not Found - Resource doesn't exist
+- 409: Conflict - Business rule violation
+- 500: Internal Server Error - Unexpected errors
+
+### 4. Scalability
+The stateless design allows for horizontal scaling by deploying multiple instances behind a load balancer.
+
+## Running the Service
+
+1. Clone the repository
+2. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Execute o servidor:
+3. Run the server:
 ```bash
 flask run
 ```
 
-O servidor estará disponível em `http://localhost:5000`
+The server will be available at `http://localhost:5000`
 
-## Tecnologias Utilizadas
+## Technologies Used
 
-- Flask (Framework Web)
-- SQLAlchemy (ORM)
-- SQLite (Banco de Dados)
-- Marshmallow (Serialização)
-- Flask-CORS (Suporte a CORS)
+- **Flask**: Web framework for building RESTful APIs
+- **SQLAlchemy**: ORM for database operations
+- **SQLite**: Database for persistent storage
+- **Marshmallow**: Serialization/deserialization and validation
+- **Flask-CORS**: Cross-Origin Resource Sharing support for distributed frontends
+
+## Performance Metrics
+
+When evaluating this backend service in a distributed environment, consider these metrics:
+
+- **Response Time**: Average time to process API requests
+- **Throughput**: Number of requests handled per second
+- **Error Rate**: Percentage of failed requests
+- **Resource Utilization**: CPU, memory, and I/O usage under load
